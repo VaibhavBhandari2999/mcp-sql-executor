@@ -1,11 +1,11 @@
-# MCP MySQL Agent Demo
+# MCP Agent Demo
 
-A minimal **Model Context Protocol (MCP)** server that lets an LLM safely query a MySQL database using SQL tools, then summarizes the results into a natural-language answer.
+A minimal **Model Context Protocol (MCP)** server that lets an LLM safely query a Local/Cloud database (MySQL, PostgreSQL) using SQL tools, then summarizes the results into a natural-language answer.
 
 This repo shows how to:
 
 - Run an MCP server over stdio using `fastmcp`
-- Connect to MySQL using a connection pool
+- Connect to DB using a connection pool
 - Plan safe SQL via an LLM (planner -> SQL + params)
 - Call the MCP tool from a Python client and summarize results
 
@@ -16,7 +16,7 @@ This repo shows how to:
 ```text
 .
 ├── server.py         # MCP server exposing a 'sql_query' tool
-├── db.py             # MySQL connection pool + 'query()' helper
+├── db.py             # DB connection pool + 'query()' helper
 ├── planner.py        # LLM-based SQL planner (natural-language -> SQL + params)
 ├── summarizer.py     # LLM-based answer summarizer for result rows
 ├── mcp_client.py     # MCP stdio client wrapper
@@ -27,14 +27,20 @@ This repo shows how to:
 ---
 
 ## Prerequisites:
-MySQL server installed locally
+One of:
+
+- Local MySQL
+
+- Local PostgreSQL
+
+- AWS RDS (MySQL or Postgres)
 
 An OpenAI-compatible API key (OpenAI or any provider exposing the same API)
 
-mysqld and mysql available on your PATH
+mysqld/psql available on your PATH
 
 ## Installing and Setup
-1. Install python dependencies
+### 1. Install python dependencies
 
 From the project root:
 ```code
@@ -46,7 +52,9 @@ pip install -r requirements.txt
 
 ```
 
-2. Start MySQL Server
+### 2. Start Server (if local)
+
+2.1 MySQL
 In one terminal tab:
 ```code 
 mysqld
@@ -61,9 +69,19 @@ So you'll have to go into a new terminal tab and run
 
     > pkill -f mysqld
 
-3. Setup MySQL DB
+2.2 PostgreSQL
+In your terminal:
+```code
+brew services start postgresql
+```
 
-(In another tab, we can do > mysql -u {username} -p -h 127.0.0.1 -P 3306)
+### 3. Setup DB
+
+3.1. MySQL
+(In another tab, we can do > mysql -u <username> -p -h 127.0.0.1 -P 3306)
+
+3.2. PostgreSQL
+(In another tab, we can do >psql -h 127.0.0.1 -U <user> -d <database>)
 
 On first login, username is root, but switch to your created user later
 
@@ -73,18 +91,19 @@ On first login, username is root, but switch to your created user later
 
 - Create Table(s)
 
-4. Add Data
+### 4. Add Data
 
-Add data to your SQL tables
+Add data to your tables
 
 ## Defining Env variables
 Create an .env file in project root which contains:
 ```code
 DB_HOST= (mostly 127.0.0.1)
-DB_PORT= (mostly 3306)
+DB_PORT= (3306 for MySQL, 5432 for Postgres)
 DB_USER= (username you created)
 DB_PASSWORD= (password you created)
 DB_DATABASE= (DB you created)
+DB_ENGINE= (mysql or postgres)
 
 OPENAI_API_KEY=sk-...
 OPENAI_MODEL=gpt-4o-mini
@@ -98,6 +117,9 @@ You can use Deepseek models through OpenRouter(https://openrouter.ai/) as well.
     
 - Change the API key and model to the ones you want. 
 - The BASE_URL then changes to https://openrouter.ai/api/v1
+
+Note - To use AWS RDS, simply replace DB_HOST with your RDS endpoint and ensure your IP has access on port 3306 or 5432.
+
 
 ## Run Pipeline
 ```bash
