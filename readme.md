@@ -120,6 +120,12 @@ You can use Deepseek models through OpenRouter(https://openrouter.ai/) as well.
 
 Note - To use AWS RDS, simply replace DB_HOST with your RDS endpoint and ensure your IP has access on port 3306 or 5432.
 
+## Define schema configuration
+The projects supports multiple tables that can be defined with their relationships in the schema_config.json file.
+
+It currently has some sample tables. Just switch those out with your own tables and relationships.
+
+
 
 ## Run Pipeline
 ```bash

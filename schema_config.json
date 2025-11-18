@@ -1,0 +1,11 @@
+{
+  "tables": [
+    "parts",
+    "orders",
+    "customers"
+  ],
+  "relationships": [
+    "orders.part_id -> parts.id",
+    "orders.customer_id -> customers.id"
+  ]
+}
